@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: To clean the NHANES sleep disorder data by renaming columns for better understanding and saving the data as a parquet file
+# Purpose: To clean the NHANES sleep disorder data by renaming columns, removing missing/refused/don't know responses, removing unnecessary columns, and saving the data as a parquet file
 # Author: Terry Tu
 # Date: 2 April 2024
 # Contact: xiangyu.tu@mail.utoronto.ca
@@ -18,26 +18,38 @@ library(arrow)
 data <- read_xpt(here("data", "raw_data", "P_SLQ.XPT"))
 
 #### Data Cleaning ####
-# Rename columns for clarity
+# Rename columns for clarity, remove missing/refused/don't know responses, and select only the relevant columns
 cleaned_data <- data %>%
   rename(
     RespondentID = SEQN,
-    WeekdaySleepTime = SLQ300,
-    WeekdayWakeTime = SLQ310,
     WeekdaySleepDuration = SLD012,
-    WeekendSleepTime = SLQ320,
-    WeekendWakeTime = SLQ330,
     WeekendSleepDuration = SLD013,
     SnoringFrequency = SLQ030,
     BreathingPauseFrequency = SLQ040,
     ReportedSleepTrouble = SLQ050,
-    DaytimeSleepiness = SLQ120
+    OverlySleepFrequency = SLQ120
   ) %>%
-  # Remove NA values, if necessary (depending on the analysis you're doing)
-  filter(complete.cases(.))
+  filter(
+    !is.na(WeekdaySleepDuration),
+    !is.na(WeekendSleepDuration),
+    !is.na(SnoringFrequency) & SnoringFrequency != 7 & SnoringFrequency != 9,
+    !is.na(BreathingPauseFrequency) & BreathingPauseFrequency != 7 & BreathingPauseFrequency != 9,
+    !is.na(ReportedSleepTrouble) & ReportedSleepTrouble != 7 & ReportedSleepTrouble != 9,
+    !is.na(OverlySleepFrequency) & OverlySleepFrequency != 7 & OverlySleepFrequency != 9
+  ) %>%
+  select(
+    RespondentID,
+    WeekdaySleepDuration,
+    WeekendSleepDuration,
+    SnoringFrequency,
+    BreathingPauseFrequency,
+    ReportedSleepTrouble,
+    OverlySleepFrequency
+  )
 
 #### Data Export ####
 # Save the cleaned data as CSV
 write_csv(cleaned_data, here("data", "analysis_data", "cleaned_data.csv"))
 # Save the cleaned data as a parquet file
 write_parquet(cleaned_data, here("data", "analysis_data", "cleaned_data.parquet"))
+
