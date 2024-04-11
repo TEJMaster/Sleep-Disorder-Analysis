@@ -4,7 +4,7 @@ This repository hosts the project "Decoding Sleep Disorders Through Self-Reporte
 Throughout this project, findings from the analysis are expected to provide valuable insights into the factors associated with sleep troubles, which could inform healthcare practices and public health policies. Advanced statistical techniques, including logistic regression, are employed to model the relationship between sleep behaviors and the likelihood of reporting sleep troubles to a doctor.
 
 ### LLM Usage
-In the creation of this project, OpenAI's ChatGPT was utilized to assist in the formulation of research questions, data analysis, and interpretation of results. The complete conversation with ChatGPT can be found in other/llm/chat_with_chatGPT.txt, detailing the contributions of ChatGPT to this project.
+In the creation of this project, OpenAI's ChatGPT was utilized to assist in the formulation of research questions, data analysis, and interpretation of results. The complete conversation with ChatGPT can be found in `other/llm/chat_with_chatGPT.txt`, detailing the contributions of ChatGPT to this project.
 
 ### Repository Structure
 The repository is organized to ensure ease of access and reproducibility:
