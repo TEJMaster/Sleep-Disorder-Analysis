@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: To clean the NHANES sleep disorder data by renaming columns, removing missing/refused/don't know responses, removing unnecessary columns, and saving the data as a parquet file
+# Purpose: To clean the NHANES sleep disorder data by renaming columns, removing missing/refused/don't know responses, removing unnecessary columns, mutating values, and saving the data as a parquet file
 # Author: Terry Tu
 # Date: 2 April 2024
 # Contact: xiangyu.tu@mail.utoronto.ca
@@ -18,7 +18,7 @@ library(arrow)
 data <- read_xpt(here("data", "raw_data", "P_SLQ.XPT"))
 
 #### Data Cleaning ####
-# Rename columns for clarity, remove missing/refused/don't know responses, and select only the relevant columns
+# Rename columns for clarity, remove missing/refused/don't know responses, select only the relevant columns, and mutate ReportedSleepTrouble from 2 to 0
 cleaned_data <- data %>%
   rename(
     RespondentID = SEQN,
@@ -37,6 +37,7 @@ cleaned_data <- data %>%
     !is.na(ReportedSleepTrouble) & ReportedSleepTrouble != 7 & ReportedSleepTrouble != 9,
     !is.na(OverlySleepFrequency) & OverlySleepFrequency != 7 & OverlySleepFrequency != 9
   ) %>%
+  mutate(ReportedSleepTrouble = ifelse(ReportedSleepTrouble == 2, 0, ReportedSleepTrouble)) %>%
   select(
     RespondentID,
     WeekdaySleepDuration,
@@ -52,4 +53,3 @@ cleaned_data <- data %>%
 write_csv(cleaned_data, here("data", "analysis_data", "cleaned_data.csv"))
 # Save the cleaned data as a parquet file
 write_parquet(cleaned_data, here("data", "analysis_data", "cleaned_data.parquet"))
-

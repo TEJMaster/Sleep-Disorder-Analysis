@@ -61,17 +61,51 @@ Our statistical exploration was conducted within the R programming environment [
 
 ## Variable Description {#sec-variable}
 
-**Weekday Sleep Duration (SLD012)**: This variable measures the total number of hours respondents usually sleep on weekdays or workdays. It is derived from their reported usual bedtime and wake time, providing an insight into their sleep patterns during the typical workweek.
+**Weekday Sleep Duration (SLD012)**: This variable measures the total number of hours respondents usually sleep on weekdays or workdays, with values ranging from 2 to 14 hours. It provides insight into their sleep patterns during the typical workweek.
 
-**Weekend Sleep Duration (SLD013)**: Similar to the weekday sleep duration, this variable represents the total number of hours respondents usually sleep on weekends or non-workdays. It helps in understanding the variation in sleep patterns during days off from work.
+**Weekend Sleep Duration (SLD013)**: Similar to the weekday sleep duration, this variable represents the total number of hours respondents usually sleep on weekends or non-workdays, also ranging from 2 to 14 hours. It helps in understanding the variation in sleep patterns during days off from work.
 
-**Snoring Frequency (SLQ030)**: This variable records how often respondents snore while sleeping, with responses ranging from 'Never' to 'Frequently'. Snoring is a common symptom of sleep disorders such as obstructive sleep apnea, making this variable relevant to the study of sleep health.
+**Snoring Frequency (SLQ030)**: This variable records how often respondents snore while sleeping, with responses ranging from 0 (Never) to 3 (Frequently). Snoring is a common symptom of sleep disorders such as obstructive sleep apnea, making this variable relevant to the study of sleep health.
 
-**Daytime Sleepiness (SLQ120)**: This variable assesses how often respondents feel excessively or overly sleepy during the day. It is an indicator of sleep quality and quantity, as well as potential sleep disorders.
+**Daytime Sleepiness (SLQ120)**: This variable assesses how often respondents feel excessively or overly sleepy during the day, with values ranging from 0 (Never) to 4 (Almost always). It is an indicator of sleep quality and quantity, as well as potential sleep disorders.
 
-**Reported Sleep Trouble (SLQ050)**: The dependent variable in this study, it indicates whether respondents have ever told a doctor or other health professional that they have trouble sleeping. It is treated as a binary outcome variable, where '1' signifies reporting sleep trouble and '2' signifies no report of sleep trouble.
+**Reported Sleep Trouble (SLQ050)**: The dependent variable in this study, it indicates whether respondents have ever told a doctor or other health professional that they have trouble sleeping. It is treated as a binary outcome variable, with values of 0 (No report of sleep trouble) and 1 (Reporting sleep trouble).
 
 # Model {#sec-model}
+
+The aim of our model is to explore the relationship between various sleep-related factors and the self-reported incidence of sleep troubles. We employ a Bayesian logistic regression model to analyze the data from the National Health and Nutrition Examination Survey (NHANES). Further details and diagnostics of this model are provided in @sec-posterior.
+
+## Model set-up
+
+Let $y_i$ denote the binary outcome indicating whether an individual has reported sleep troubles to a doctor, with $y_i = 1$ for reported troubles and $y_i = 0$ otherwise. The predictors include weekday sleep duration ($x_{i1}$), weekend sleep duration ($x_{i2}$), snoring frequency ($x_{i3}$), breathing pause frequency ($x_{i4}$), and daytime sleepiness ($x_{i5}$). The logistic regression model is formulated as follows:
+
+\begin{align}
+y_i | p_i &\sim \mbox{Bernoulli}(p_i) \\
+\mbox{logit}(p_i) &= \beta_0 + \beta_1 \times x_{i1} + \beta_2 \times x_{i2} + \beta_3 \times x_{i3} + \beta_4 \times x_{i4} + \beta_5 \times x_{i5} \\
+\beta_0 &\sim \mbox{Normal}(0, 2.5) \\
+\beta_1, \beta_2, \beta_3, \beta_4, \beta_5 &\sim \mbox{Normal}(0, 2.5)
+\end{align}
+
+The model is implemented in R using the rstanarm package, enabling the incorporation of prior beliefs about the parameters and estimation of their posterior distributions. The stan_glm function from rstanarm is used to perform the Bayesian logistic regression, integrating both the data and prior knowledge for inference.
+
+Priors for the intercept and coefficients are chosen to reflect a neutral stance before observing the data, centered around zero with a moderate spread to allow flexibility in the estimates. These priors convey an expectation of no substantial effect from each predictor, with the data informing deviations from this baseline assumption.
+
+The logistic regression framework models the log odds of reporting sleep troubles as a linear combination of the predictors, with the coefficients indicating the direction and magnitude of each predictor's effect. The stan_glm function combines these priors with the data to estimate the posterior distributions of the model parameters, providing a comprehensive view of the relationships between sleep-related factors and reported sleep troubles.
+
+## Model Justification
+In our analysis, we hypothesize that certain sleep-related factors will have significant associations with the likelihood of reporting sleep troubles. Specifically:
+
+**Weekday Sleep Duration ($\beta_1$)**: We hypothesize that this coefficient may be positive, indicating that longer sleep durations on weekdays could be associated with a higher likelihood of reporting sleep troubles. This could reflect the possibility that individuals with sleep disturbances may attempt to compensate by sleeping longer.
+
+**Weekend Sleep Duration ($\beta_2$)**: Conversely, we hypothesize that this coefficient may be negative, suggesting that longer sleep durations on weekends might be associated with a lower likelihood of reporting sleep troubles. This could indicate that catching up on sleep during weekends may alleviate some sleep-related issues.
+
+**Snoring Frequency ($\beta_3$)**: We expect this coefficient to be positive, as frequent snoring is often a symptom of sleep disorders such as obstructive sleep apnea, which could lead to reporting sleep troubles.
+
+**Breathing Pause Frequency ($\beta_4$)**: Similarly, we hypothesize that this coefficient will be positive, as pauses in breathing during sleep are a hallmark of sleep apnea, a condition commonly associated with sleep disturbances.
+
+**Daytime Sleepiness ($\beta_5$)**: We anticipate that this coefficient will also be positive, as excessive sleepiness during the day is a common consequence of poor sleep quality or insufficient sleep, which may prompt individuals to report sleep troubles.
+
+The Bayesian framework allows us to incorporate these hypotheses as priors in our model, providing a structured way to integrate our substantive expectations with the data analysis. By doing so, we can obtain a more informed and nuanced interpretation of the relationships between sleep-related factors and the likelihood of reporting sleep troubles.
 
 # Result {#sec-result}
 

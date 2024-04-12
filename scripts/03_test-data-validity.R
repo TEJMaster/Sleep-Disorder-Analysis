@@ -43,7 +43,7 @@ test_that("Valid values in BreathingPauseFrequency", {
 
 # Test 6: Check for valid values in ReportedSleepTrouble (SLQ050)
 test_that("Valid values in ReportedSleepTrouble", {
-  expect_true(all(!is.na(cleaned_data$ReportedSleepTrouble) & cleaned_data$ReportedSleepTrouble %in% c(1, 2)))
+  expect_true(all(!is.na(cleaned_data$ReportedSleepTrouble) & cleaned_data$ReportedSleepTrouble %in% c(0, 1)))
 })
 
 # Test 7: Check for valid values in OverlySleepFrequency (SLQ120)
