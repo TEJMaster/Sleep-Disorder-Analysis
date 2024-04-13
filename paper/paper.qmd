@@ -71,6 +71,18 @@ Our statistical exploration was conducted within the R programming environment [
 
 **Reported Sleep Trouble (SLQ050)**: The dependent variable in this study, it indicates whether respondents have ever told a doctor or other health professional that they have trouble sleeping. It is treated as a binary outcome variable, with values of 0 (No report of sleep trouble) and 1 (Reporting sleep trouble).
 
+## Measurement:
+
+In this study, we utilized data from the National Health and Nutrition Examination Survey (NHANES), specifically focusing on the sleep disorders component which includes data collected between 2017 and March 2020. The NHANES program, a longstanding project conducted by the National Center for Health Statistics (NCHS), plays a critical role in assessing the health and nutritional status of adults and children in the United States. This dataset is pivotal in understanding public health and informs policy decisions through scientifically reliable data [@Prevention_2021].
+
+The sleep disorders dataset within NHANES is enriched by questions adapted from the Munich ChronoType Questionnaire [@Roenneberg2003], targeting various aspects of sleep behavior and disorders. The inclusion of these questions is instrumental in exploring the complex dynamics of sleep patterns among the U.S. population. Due to disruptions caused by the COVID-19 pandemic, the 2019-2020 data collection cycle was prematurely halted in March 2020, leading to its combination with the 2017-2018 cycle to ensure national representativeness and analytical robustness.
+
+This combined dataset referred to as the NHANES 2017-March 2020 pre-pandemic data, offers valuable insights into the sleep habits of Americans before the pandemic. It is instrumental for researchers and public health officials aiming to understand baseline sleep behaviors and potential disturbances across a broad demographic spectrum.
+
+To prepare the dataset for analysis, extensive data cleaning and processing were conducted. This included removing entries with missing, refused, or 'don't know' responses for critical variables such as sleep duration and frequency of snoring. Additionally, to address issues with data reliability and consistency, about 3% of the data underwent verification through audio recordings of the interviews. Moreover, for variables capturing sleep duration on weekdays (SLD012) and weekends (SLD013), reported times were meticulously reviewed, with outliers adjusted and rounded to the nearest half-hour, enhancing the data's accuracy and usability.
+
+Detailed descriptions of the variables used in this study, along with the specific adjustments made to the dataset, are available in  @sec-variable. This section is designed to provide a comprehensive understanding of the origins, processing, and analytical framework applied to each variable relevant to this study.
+
 # Model {#sec-model}
 
 The aim of our model is to explore the relationship between various sleep-related factors and the self-reported incidence of sleep troubles. We employ a Bayesian logistic regression model to analyze the data from the National Health and Nutrition Examination Survey (NHANES). Further details and diagnostics of this model are provided in @sec-posterior.
@@ -111,6 +123,13 @@ The Bayesian framework allows us to incorporate these hypotheses as priors in ou
 
 # Discussion {#sec-discussion}
 
-# Appendix {#sec-appendix}
+# Appendix {.unnumbered #sec-appendix}
+
+## Additional Data Details
+
+## Model Details {#sec-model-details}
+
+### Posterior Predictive Check {#sec-posterior}
+
 
 # References
