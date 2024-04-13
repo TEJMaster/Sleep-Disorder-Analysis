@@ -53,7 +53,7 @@ cleaned_data <- read_parquet(here("data", "analysis_data", "cleaned_data.parquet
 
 The dataset underpinning this analysis is derived from the National Health and Nutrition Examination Survey (NHANES), spanning from 2017 to March 2020. This public dataset includes responses from participants regarding their sleep patterns, incorporating 10,195 records initially. After meticulous data cleaning, the dataset for analysis stands at 10,031 records, encapsulating variables critical to our research: the respondent's ID, usual sleep and wake times on both weekdays and weekends, total sleep duration, frequency of snoring, incidence of breathing pauses during sleep, and self-reported communication of sleep troubles to a health professional. The dataset provides a snapshot of Americans' sleep behaviors before the disruption caused by the COVID-19 pandemic [@Prevention_2021].
 
-The survey participants' ages range widely, reflecting the diversity of the American population. Variables are finely tuned to capture the multifaceted nature of sleep, encompassing aspects such as duration, disruptions, and subjective experiences of daytime sleepiness. The NHANES protocol ensures that this dataset is a robust and reliable source of information, adhering to stringent ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines. For further information on the data cleaning specifics and validation checks, please see the supplementary material in @sec-appendix (Appendix).
+The survey participants' ages range widely, reflecting the diversity of the American population. Variables are finely tuned to capture the multifaceted nature of sleep, encompassing aspects such as duration, disruptions, and subjective experiences of daytime sleepiness. The NHANES protocol ensures that this dataset is a robust and reliable source of information, adhering to stringent ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines. For further information on the data cleaning specifics and validation checks, please see the supplementary material in @sec-add-data.
 
 ## Data Analysis Tools
 
@@ -67,9 +67,26 @@ Our statistical exploration was conducted within the R programming environment [
 
 **Snoring Frequency (SLQ030)**: This variable records how often respondents snore while sleeping, with responses ranging from 0 (Never) to 3 (Frequently). Snoring is a common symptom of sleep disorders such as obstructive sleep apnea, making this variable relevant to the study of sleep health.
 
-**Daytime Sleepiness (SLQ120)**: This variable assesses how often respondents feel excessively or overly sleepy during the day, with values ranging from 0 (Never) to 4 (Almost always). It is an indicator of sleep quality and quantity, as well as potential sleep disorders.
+**Overly Sleep Frequency (SLQ120)**: This variable assesses how often respondents feel excessively or overly sleepy during the day, with values ranging from 0 (Never) to 4 (Almost always). It is an indicator of sleep quality and quantity, as well as potential sleep disorders.
 
 **Reported Sleep Trouble (SLQ050)**: The dependent variable in this study, it indicates whether respondents have ever told a doctor or other health professional that they have trouble sleeping. It is treated as a binary outcome variable, with values of 0 (No report of sleep trouble) and 1 (Reporting sleep trouble).
+
+## Sample of Cleaned Sleep Disorder Data
+
+```{r}
+#| label: tbl-sleep-data-sample
+#| tbl-cap: Sample of Sleep Disorder Data
+#| echo: false
+# Code created with the help from ChatGPT
+sample_data <- head(cleaned_data) %>%
+  select(RespondentID, WeekdaySleepDuration, WeekendSleepDuration, SnoringFrequency, BreathingPauseFrequency, OverlySleepFrequency, ReportedSleepTrouble)
+
+# Create a nicely formatted table with custom column names
+kable(sample_data, col.names = c("Respondent ID", "Weekday Sleep Duration (hrs)", "Weekend Sleep Duration (hrs)", "Snoring Frequency", "Breathing Pause Frequency", "Overly Sleep Frequency", "Reported Sleep Trouble"))
+
+```
+
+@tbl-sleep-data-sample represents a subset of the broader NHANES sleep disorder dataset. Each row in the table corresponds to an individual participant, uniquely identified by their Respondent ID. The "Weekday Sleep Duration (hrs)" and "Weekend Sleep Duration (hrs)" columns quantify the number of hours slept during the weekdays and weekends, respectively, providing a snapshot of the individual's sleep patterns. "Snoring Frequency" and "Breathing Pause Frequency" are categorical measures that reflect how often the respondents experience snoring and breathing pauses during sleep, common indicators of sleep disturbances such as sleep apnea. The "Overly Sleep Frequency" column indicates the frequency at which respondents report feeling overly sleepy during the day, a sign that can be indicative of inadequate sleep quality or quantity. Lastly, the "Reported Sleep Trouble" column is a binary measure showing whether the respondent has reported having sleep troubles to a health professional, with 0 signifying no reported trouble and 1 indicating reported trouble.
 
 ## Measurement:
 
@@ -82,6 +99,8 @@ This combined dataset referred to as the NHANES 2017-March 2020 pre-pandemic dat
 To prepare the dataset for analysis, extensive data cleaning and processing were conducted. This included removing entries with missing, refused, or 'don't know' responses for critical variables such as sleep duration and frequency of snoring. Additionally, to address issues with data reliability and consistency, about 3% of the data underwent verification through audio recordings of the interviews. Moreover, for variables capturing sleep duration on weekdays (SLD012) and weekends (SLD013), reported times were meticulously reviewed, with outliers adjusted and rounded to the nearest half-hour, enhancing the data's accuracy and usability.
 
 Detailed descriptions of the variables used in this study, along with the specific adjustments made to the dataset, are available in  @sec-variable. This section is designed to provide a comprehensive understanding of the origins, processing, and analytical framework applied to each variable relevant to this study.
+
+## Data Exploration: {#sec-exploration}
 
 # Model {#sec-model}
 
@@ -123,13 +142,14 @@ The Bayesian framework allows us to incorporate these hypotheses as priors in ou
 
 # Discussion {#sec-discussion}
 
-# Appendix {.unnumbered #sec-appendix}
+# Appendix {#sec-appendix}
 
-## Additional Data Details
+## Additional Data Details {#sec-add-data}
 
-## Model Details {#sec-model-details}
+## Model Details 
 
 ### Posterior Predictive Check {#sec-posterior}
+
 
 
 # References
