@@ -23,9 +23,8 @@ bayesian_logistic_model <- stan_glm(
   ReportedSleepTrouble ~ WeekdaySleepDuration + WeekendSleepDuration + SnoringFrequency + BreathingPauseFrequency + OverlySleepFrequency,
   data = cleaned_data,
   family = binomial(), # Indicating a logistic regression model
-  prior = normal(0, 2.5), # Set the prior for the regression coefficients
-  prior_intercept = normal(0, 2.5), # Set the prior for the intercept
-  seed = 2024 # Set the seed for reproducibility
+  prior = normal(0, 1), # Set the prior for the regression coefficients
+  prior_intercept = normal(0, 1), # Set the prior for the intercept
 )
 
 # Summary of the model to check for immediate red flags

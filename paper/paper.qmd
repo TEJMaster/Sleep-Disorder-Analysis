@@ -31,6 +31,7 @@ library(rstanarm)
 library(haven)
 library(arrow)
 library(gridExtra)
+library(modelsummary)
 ```
 
 # Introduction
@@ -166,32 +167,93 @@ Let $y_i$ denote the binary outcome indicating whether an individual has reporte
 \begin{align}
 y_i | p_i &\sim \mbox{Bernoulli}(p_i) \\
 \mbox{logit}(p_i) &= \beta_0 + \beta_1 \times x_{i1} + \beta_2 \times x_{i2} + \beta_3 \times x_{i3} + \beta_4 \times x_{i4} + \beta_5 \times x_{i5} \\
-\beta_0 &\sim \mbox{Normal}(0, 2.5) \\
-\beta_1, \beta_2, \beta_3, \beta_4, \beta_5 &\sim \mbox{Normal}(0, 2.5)
+\beta_0 &\sim \mbox{Normal}(0, 1) \\ % Assuming the log-odds of the base rate of reported sleep trouble is centered around 0
+\beta_1, \beta_2, \beta_3, \beta_4, \beta_5 &\sim \mbox{Normal}(0, 1) \\ % Weekday sleep duration effect and Weekend sleep duration effect, Snoring frequency,  Breathing pause frequency, and Overly sleep frequency
 \end{align}
 
-The model is implemented in R using the rstanarm package, enabling the incorporation of prior beliefs about the parameters and estimation of their posterior distributions. The stan_glm function from rstanarm is used to perform the Bayesian logistic regression, integrating both the data and prior knowledge for inference.
+The logistic regression model is defined using a Bayesian framework, implemented in R with the `rstanarm` package. This approach allows us to incorporate prior knowledge about the parameters and to estimate their posterior distributions based on the observed data.
 
-Priors for the intercept and coefficients are chosen to reflect a neutral stance before observing the data, centered around zero with a moderate spread to allow flexibility in the estimates. These priors convey an expectation of no substantial effect from each predictor, with the data informing deviations from this baseline assumption.
+In our model, the probability of an individual reporting sleep troubles, denoted by $p_i$, follows a Bernoulli distribution. The log odds of reporting sleep troubles are modeled as a linear combination of the predictors, with $\beta_0$ representing the intercept, and $\beta_1$ through $\beta_5$ representing the slopes for the respective predictors.
 
-The logistic regression framework models the log odds of reporting sleep troubles as a linear combination of the predictors, with the coefficients indicating the direction and magnitude of each predictor's effect. The stan_glm function combines these priors with the data to estimate the posterior distributions of the model parameters, providing a comprehensive view of the relationships between sleep-related factors and reported sleep troubles.
+The priors for the intercept ($\beta_0$) and the slopes ($\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, $\beta_5$) are deliberately chosen to reflect initial neutrality or skepticism regarding the impact of each predictor on the likelihood of reporting sleep troubles. Specifically, $\beta_0$ is assigned a Normal(0, 1) prior, indicating our initial uncertainty about the base rate of sleep trouble in the population.
+
+For $\beta_1$ and $\beta_2$, which correspond to the effects of weekday and weekend sleep duration, we posit Normal(0, 0.5) priors. These priors are centered around zero, reflecting the number of sleep hour can be either positively or negatively contribute to sleep troubles, with a modest expectation of effect size.
+
+The coefficients $\beta_3$, $\beta_4$, $\beta_5$ relating to snoring frequency, breathing pause frequency, and overly sleep frequency are each given a Normal(0, 1) prior. These priors imply that, prior to analyzing the data, we do not have strong expectations about the direction or scale of these effects.
 
 ## Model Justification
-In our analysis, we hypothesize that certain sleep-related factors will have significant associations with the likelihood of reporting sleep troubles. Specifically:
 
-**Weekday Sleep Duration ($\beta_1$)**: We hypothesize that this coefficient may be positive, indicating that longer sleep durations on weekdays could be associated with a higher likelihood of reporting sleep troubles. This could reflect the possibility that individuals with sleep disturbances may attempt to compensate by sleeping longer.
+Our Bayesian logistic regression model is designed to investigate the associations between various sleep-related factors and the likelihood of reporting sleep troubles. The priors for the coefficients are set with specific hypotheses in mind, informed by existing literature and plausible biological mechanisms:
 
-**Weekend Sleep Duration ($\beta_2$)**: Conversely, we hypothesize that this coefficient may be negative, suggesting that longer sleep durations on weekends might be associated with a lower likelihood of reporting sleep troubles. This could indicate that catching up on sleep during weekends may alleviate some sleep-related issues.
+**Weekday Sleep Duration ($\beta_1$)**: We initially hypothesize that there may be a complex relationship between sleep duration on weekdays and sleep troubles. Long sleep durations could indicate an attempt to compensate for poor quality sleep, potentially related to sleep disturbances. As such, the prior for this coefficient is centered around zero, allowing the data to indicate the direction of association.
 
-**Snoring Frequency ($\beta_3$)**: We expect this coefficient to be positive, as frequent snoring is often a symptom of sleep disorders such as obstructive sleep apnea, which could lead to reporting sleep troubles.
+**Weekend Sleep Duration ($\beta_2$)**: For sleep duration on weekends, we consider the possibility of a recuperative effect, where catching up on sleep may reduce the likelihood of reporting troubles. This hypothesis is tentative, hence a prior centered around zero with a conservative standard deviation, permitting data-driven insights into this relationship.
 
-**Breathing Pause Frequency ($\beta_4$)**: Similarly, we hypothesize that this coefficient will be positive, as pauses in breathing during sleep are a hallmark of sleep apnea, a condition commonly associated with sleep disturbances.
+**Snoring Frequency ($\beta_3$)**: Frequent snoring is a recognized symptom of sleep disorders like obstructive sleep apnea, which can lead to disrupted sleep. We posit a positive association between snoring frequency and reported sleep troubles, reflected in the priors for this coefficient.
 
-**Daytime Sleepiness ($\beta_5$)**: We anticipate that this coefficient will also be positive, as excessive sleepiness during the day is a common consequence of poor sleep quality or insufficient sleep, which may prompt individuals to report sleep troubles.
+**Breathing Pause Frequency ($\beta_4$)**: Breathing pauses during sleep are indicative of sleep apnea, which is directly related to sleep troubles. We hypothesize a positive association for this coefficient, which is incorporated into the prior setting.
 
-The Bayesian framework allows us to incorporate these hypotheses as priors in our model, providing a structured way to integrate our substantive expectations with the data analysis. By doing so, we can obtain a more informed and nuanced interpretation of the relationships between sleep-related factors and the likelihood of reporting sleep troubles.
+**Daytime Sleepiness ($\beta_5$)**: Excessive daytime sleepiness is often the result of inadequate or disrupted nighttime sleep. We hypothesize a positive relationship between daytime sleepiness and the reporting of sleep troubles, expecting that those experiencing higher levels of sleepiness will be more likely to report troubles.
+
+These hypotheses are structured into our Bayesian model as informed priors, which, while reflecting our initial expectations, are sufficiently flexible to be shaped by the empirical data. This integration of prior beliefs and observed information will yield posterior distributions that convey a robust interpretation of how sleep behaviors relate to the reporting of sleep troubles.
+
 
 # Result {#sec-result}
+
+```{r echo=FALSE}
+# Retrieve the Bayesian logistic model from the saved .rds file
+bayesian_logistic_model <- readRDS(file = here("models", "bayesian_logistic_model.rds"))
+```
+
+## Model Coefficients Interpretation
+
+```{r}
+#| label: tbl-logistic-coefficients
+#| tbl-cap: "Summary Statistics for the Coefficients of the Logistic Model"
+#| echo: false
+# Round the coefficients directly when creating the data frame
+coefficients_df <- data.frame(
+  Term = names(coef(bayesian_logistic_model)),
+  Estimate = round(coef(bayesian_logistic_model), 3)
+)
+
+# Create the kable without row names
+coefficient_table <- kable(coefficients_df, 
+                           col.names = c("Term", "Estimate"), 
+                           align = 'c',
+                           row.names = FALSE)  # Ensure row names are not printed
+
+# Print the summary table
+coefficient_table
+```
+@tbl-logistic-coefficients presents the key coefficients for understanding the influence of various sleep-related variables on the likelihood of reporting sleep troubles:
+
+**Intercept ($\beta_0$)**:
+The intercept of the model, $\beta_0$, is estimated at -1.396. This value represents the log odds of reporting sleep troubles when all the predictors are held at zero. It suggests that, in the absence of any sleep issues or without considering any sleep behaviors, the baseline log odds of reporting sleep troubles to a doctor are negative, indicating a lower probability of reporting sleep troubles.
+
+**Weekday Sleep Duration ($\beta_1$)**:
+For the weekday sleep duration, the coefficient $\beta_1$ is 0.051, suggesting a slight increase in the log odds of reporting sleep troubles for each additional hour of sleep during the weekdays. This could be indicative of a situation where those who sleep more on weekdays might be doing so due to sleep issues that have led them to consult with a doctor.
+
+**Weekend Sleep Duration ($\beta_2$)**:
+Conversely, the coefficient for weekend sleep duration, $\beta_2$, is -0.131. This implies that for each additional hour of sleep during the weekends, there is a decrease in the log odds of reporting sleep troubles. It could be interpreted as those who manage to sleep more on weekends are less likely to report sleep problems, possibly because catching up on sleep may alleviate some of their weekday sleep deficits.
+
+**Snoring Frequency ($\beta_3$)**:
+The coefficient for snoring frequency, $\beta_3$, has a value of 0.032. While this is a positive value, suggesting that an increase in snoring frequency is associated with an increase in the likelihood of reporting sleep troubles, the effect size is relatively small.
+
+**Breathing Pause Frequency ($\beta_4$)**:
+The coefficient for breathing pause frequency, $\beta_4$, is 0.412, indicating a more substantial positive association with reporting sleep troubles. This aligns with clinical understanding, as breathing pauses are often associated with sleep disorders like sleep apnea, which can be a significant concern prompting medical consultation.
+
+**Overly Sleep Frequency ($\beta_5$)**:
+Lastly, the coefficient for overly sleep frequency, $\beta_5$, is 0.425, suggesting a strong relationship with the reporting of sleep troubles. This result is intuitive, as feeling excessively sleepy can be a direct symptom of poor sleep quality or a sleep disorder, leading to discussions with a healthcare provider.
+
+**Interpretation**:
+The model indicates that various factors are related to the reporting of sleep troubles. While longer weekday sleep duration slightly increases the log odds of reporting sleep troubles, longer weekend sleep can reduce it. Frequent snoring has a smaller effect compared to breathing pauses and daytime sleepiness, which both have significant positive associations with reporting sleep troubles. These findings underline the complexity of sleep behavior and its impact on sleep quality and health consultations.
+
+## Model Equation
+
+\begin{align}
+\text{logit}(p_i) &= -1.396 + 0.051 \times x_{i1} - 0.131 \times x_{i2} + 0.032 \times x_{i3} + 0.412 \times x_{i4} + 0.425 \times x_{i5} + \varepsilon_i
+\end{align}
 
 # Discussion {#sec-discussion}
 
