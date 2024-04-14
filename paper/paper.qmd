@@ -30,6 +30,7 @@ library(kableExtra)
 library(rstanarm)
 library(haven)
 library(arrow)
+library(gridExtra)
 ```
 
 # Introduction
@@ -44,7 +45,7 @@ Following this introduction, the structure of the paper is laid out to facilitat
 
 # Data {#sec-data}
 
-```{r include=FALSE, message=FALSE}
+```{r include=FALSE, message=FALSE, echo=FALSE}
 # read the data file and store it in the 'data' variable
 cleaned_data <- read_parquet(here("data", "analysis_data", "cleaned_data.parquet"))
 ```
@@ -101,6 +102,58 @@ To prepare the dataset for analysis, extensive data cleaning and processing were
 Detailed descriptions of the variables used in this study, along with the specific adjustments made to the dataset, are available in  @sec-variable. This section is designed to provide a comprehensive understanding of the origins, processing, and analytical framework applied to each variable relevant to this study.
 
 ## Data Exploration: {#sec-exploration}
+
+In this section, we explore the distributions of key variables related to sleep patterns and disorders in the NHANES dataset. Histograms provide visual insights into the frequency of reported sleep duration, snoring, breathing pauses, daytime sleepiness, and reported sleep troubles.
+
+```{r fig-histograms, echo=FALSE, fig.width=8, fig.height=6, fig.cap="Distributions of sleep-related variables"}
+# Generate individual histograms for each variable
+p1 <- ggplot(cleaned_data, aes(x = WeekdaySleepDuration)) + 
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") + 
+  labs(x = "Weekday Sleep Duration (hrs)", y = "Count") +
+  theme_minimal()
+
+p2 <- ggplot(cleaned_data, aes(x = WeekendSleepDuration)) + 
+  geom_histogram(binwidth = 1, fill = "salmon", color = "black") + 
+  labs(x = "Weekend Sleep Duration (hrs)", y = "Count") +
+  theme_minimal()
+
+p3 <- ggplot(cleaned_data, aes(x = SnoringFrequency)) + 
+  geom_histogram(binwidth = 1, fill = "lightgreen", color = "black") + 
+  labs(x = "Snoring Frequency", y = "Count") +
+  theme_minimal()
+
+p4 <- ggplot(cleaned_data, aes(x = BreathingPauseFrequency)) + 
+  geom_histogram(binwidth = 1, fill = "plum", color = "black") + 
+  labs(x = "Breathing Pause Frequency", y = "Count") +
+  theme_minimal()
+
+p5 <- ggplot(cleaned_data, aes(x = OverlySleepFrequency)) + 
+  geom_histogram(binwidth = 1, fill = "gold", color = "black") + 
+  labs(x = "Overly Sleep Frequency", y = "Count") +
+  theme_minimal()
+
+p6 <- ggplot(cleaned_data, aes(x = as.factor(ReportedSleepTrouble))) + 
+  geom_bar(fill = "lightblue", color = "black") + 
+  labs(x = "Reported Sleep Trouble", y = "Count") +
+  scale_x_discrete(labels = c("0" = "No Trouble", "1" = "Trouble")) +
+  theme_minimal()
+
+
+# Arrange the plots into a 2x3 grid
+grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 3)
+```
+
+**Weekday Sleep Duration (hrs)**: The histogram for weekday sleep duration exhibits a unimodal distribution, peaking around 7 to 8 hours, which aligns with the generally recommended sleep duration for adults. The symmetrical shape suggests a commonality in sleep patterns among individuals during the workweek.
+
+**Weekend Sleep Duration (hrs)**: Similarly unimodal, the weekend sleep duration distribution also peaks around the same range as weekday sleep but shows a noticeable tendency for slightly longer durations. This may suggest that individuals take the opportunity to sleep more on weekends, possibly compensating for the workweek.
+
+**Snoring Frequency**: The snoring frequency histogram reveals a broad distribution, with the majority of respondents indicating they never or rarely snore. A significant count of individuals also reports frequent snoring, suggesting that the experience of snoring is quite varied among the respondents.
+
+**Breathing Pause Frequency**: The distribution for breathing pause frequency is steeply skewed towards 'Never', suggesting that breathing pauses during sleep are infrequently experienced or reported by the majority of respondents. The scant instances of frequent breathing pauses may indicate a lower occurrence or a lack of self-awareness of these events.
+
+**Overly Sleep Frequency**: The distribution of daytime sleepiness frequency is right-skewed, with 'Sometimes (2-4 times a month)' emerging as the modal category. However, a notable proportion of respondents experience sleepiness during the day at least once a month, suggesting that daytime sleepiness is a common issue.
+
+**Reported Sleep Trouble**: The binary distribution for reported sleep trouble shows a larger proportion of individuals reporting no sleep trouble compared to those reporting trouble, approximately threefold. This ratio highlights that while sleep trouble is present, it is not reported by the majority of participants in this sample.
 
 # Model {#sec-model}
 
