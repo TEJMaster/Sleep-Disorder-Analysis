@@ -32,6 +32,7 @@ library(haven)
 library(arrow)
 library(gridExtra)
 library(modelsummary)
+library(bayesplot)
 ```
 
 # Introduction
@@ -55,7 +56,7 @@ cleaned_data <- read_parquet(here("data", "analysis_data", "cleaned_data.parquet
 
 The dataset underpinning this analysis is derived from the National Health and Nutrition Examination Survey (NHANES), spanning from 2017 to March 2020. This public dataset includes responses from participants regarding their sleep patterns, incorporating 10,195 records initially. After meticulous data cleaning, the dataset for analysis stands at 10,031 records, encapsulating variables critical to our research: the respondent's ID, usual sleep and wake times on both weekdays and weekends, total sleep duration, frequency of snoring, incidence of breathing pauses during sleep, and self-reported communication of sleep troubles to a health professional. The dataset provides a snapshot of Americans' sleep behaviors before the disruption caused by the COVID-19 pandemic [@Prevention_2021].
 
-The survey participants' ages range widely, reflecting the diversity of the American population. Variables are finely tuned to capture the multifaceted nature of sleep, encompassing aspects such as duration, disruptions, and subjective experiences of daytime sleepiness. The NHANES protocol ensures that this dataset is a robust and reliable source of information, adhering to stringent ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines. For further information on the data cleaning specifics and validation checks, please see the supplementary material in @sec-add-data.
+The survey participants' ages range widely, reflecting the diversity of the American population. Variables are finely tuned to capture the multifaceted nature of sleep, encompassing aspects such as duration, disruptions, and subjective experiences of daytime sleepiness. The NHANES protocol ensures that this dataset is a robust and reliable source of information, adhering to stringent ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines. For further information on the data cleaning specifics and validation checks, please see the supplementary material in Appendix.
 
 ## Data Analysis Tools
 
@@ -158,7 +159,7 @@ grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 3)
 
 # Model {#sec-model}
 
-The aim of our model is to explore the relationship between various sleep-related factors and the self-reported incidence of sleep troubles. We employ a Bayesian logistic regression model to analyze the data from the National Health and Nutrition Examination Survey (NHANES). Further details and diagnostics of this model are provided in @sec-posterior.
+The aim of our model is to explore the relationship between various sleep-related factors and the self-reported incidence of sleep troubles. We employ a Bayesian logistic regression model to analyze the data from the National Health and Nutrition Examination Survey (NHANES). Further details and diagnostics of this model are provided in Appendix.
 
 ## Model set-up
 
@@ -255,16 +256,144 @@ The model indicates that various factors are related to the reporting of sleep t
 \text{logit}(p_i) &= -1.396 + 0.051 \times x_{i1} - 0.131 \times x_{i2} + 0.032 \times x_{i3} + 0.412 \times x_{i4} + 0.425 \times x_{i5} + \varepsilon_i
 \end{align}
 
+## Predict Sleep Disorder Through Self Reported Patterns
+
+This section provides a detailed comparison of predicted sleep trouble probabilities for two hypothetical individuals, Jack and Bob, based on their sleep behavior statistics. The table below illustrates the significant differences in their sleep patterns and how these patterns potentially influence the logistic regression model's predictions regarding their sleep troubles.
+
+```{r}
+#| label: tbl-sample-prediction
+#| tbl-cap: "Comparison of predictive factors for Jack and Bob"
+#| echo: false
+# Define the coefficients from the model
+intercept <- -1.396
+coef_weekday_sleep <- 0.051
+coef_weekend_sleep <- -0.131
+coef_snoring_frequency <- 0.032
+coef_breathing_pause <- 0.412
+coef_overly_sleep_frequency <- 0.425
+
+# Sample data for Jack and Bob
+data <- data.frame(
+  Name = c("Jack", "Bob"),
+  WeekdaySleep = c(5, 8),  # hours
+  WeekendSleep = c(8, 10),  # hours
+  SnoringFrequency = c(3, 0),  # 0: Never, 3: Frequently
+  BreathingPause = c(3, 0),  # 0: Never, 3: Frequently 
+  OverlySleepy = c(4, 1)  # 0: Never, 4: Always, 1: Rarely
+)
+
+# Calculate the logit(p) for each person
+data$logit_p <- intercept + 
+  coef_weekday_sleep * data$WeekdaySleep + 
+  coef_weekend_sleep * data$WeekendSleep + 
+  coef_snoring_frequency * data$SnoringFrequency + 
+  coef_breathing_pause * data$BreathingPause + 
+  coef_overly_sleep_frequency * data$OverlySleepy
+
+# Create a table to display
+person_stats <- data.frame(
+  Statistic = c("Weekday Sleep Duration", "Weekend Sleep Duration", "Snoring Frequency", 
+                "Breathing Pause Frequency", "Overly Sleep Frequency", "Logit(p)"),
+  Jack = c("5 hours", "8 hours", "3 (Frequently)", "3 (Frequently)", "4 (Always)", sprintf("%.3f", data$logit_p[data$Name == "Jack"])),
+  Bob = c("8 hours", "10 hours", "0 (Never)", "0 (Never)", "1 (Rarely)", sprintf("%.3f", data$logit_p[data$Name == "Bob"]))
+)
+
+# Create a nicely formatted table
+kable_output <- kable(person_stats, col.names = c("Statistic", "Jack", "Bob"), align = 'c') %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE, position = "center")
+
+# Print the summary table
+kable_output
+```
+
+Interpretation of the Results From @tbl-sample-prediction
+
+**Logit(p)**: The computed logit(p) values reflect the aggregated effect of these variables. A positive value indicates a higher log-odds of reporting sleep troubles, while a negative value suggests lower odds. Jack’s logit(p) value is positive, indicating a higher likelihood of reporting sleep troubles, possibly due to his poor sleep habits and symptoms indicative of sleep disorders. Conversely, Bob’s negative logit(p) value suggests a lower probability of reporting sleep troubles, aligning with his generally healthier sleep patterns.
+
+**Summary**: 
+This analysis highlights how individual differences in sleep patterns and related symptoms can predict the likelihood of reporting sleep troubles. Jack's profile, characterized by frequent snoring, frequent breathing pauses, always feeling overly sleepy, and shorter sleep durations, aligns with a higher propensity for sleep disturbances. In contrast, Bob’s healthier sleep habits and fewer symptoms suggest a lower risk of sleep troubles. This model effectively uses sleep-related metrics to provide insights into potential sleep health outcomes.
+
+## Analysis of Residuals {#sec-residuals}
+
+In this section, we evaluate the residuals from our logistic regression model to assess the model's goodness of fit and identify any potential anomalies in our data.
+
+```{r residual-plots, echo=FALSE}
+predicted_probs <- predict(bayesian_logistic_model, type = "response")
+residuals <- residuals(bayesian_logistic_model, type = "pearson")
+
+# Plotting residuals
+plot(predicted_probs, residuals, xlab = "Predicted Probabilities", ylab = "Standardized Residuals")
+abline(h = 0, col = "red")
+```
+## Model Performance
+
 # Discussion {#sec-discussion}
 
-# Appendix {#sec-appendix}
 
-## Additional Data Details {#sec-add-data}
+# Appendix {.unnumbered}
 
-## Model Details 
+## A Additional Data Details {.unnumbered}
 
-### Posterior Predictive Check {#sec-posterior}
+### A.1 Data Cleaning Process {.unnumbered}
 
+The data cleaning procedure for the NHANES sleep disorder data was meticulous to ensure the reliability of the dataset for analysis. Initially, the raw data was imported using the `read_xpt` function, ensuring that all variables of interest were accurately read into R. The cleaning process included the following steps:
 
+- Renaming variables for clarity.
+- Removing entries with missing values or responses that indicated uncertainty (e.g., 'don't know' or 'refused').
+- Selecting only relevant columns for the analysis.
+- Recoding the `ReportedSleepTrouble` (outcome) variable to a binary format (0 and 1).
+- Ensuring all identifiers were integers and that key sleep-related variables fell within reasonable and expected ranges.
+
+The final dataset was saved in both CSV and parquet formats for accessibility and efficient analysis.
+
+### A.2 Data Integrity and Validation {.unnumbered}
+
+Following the cleaning phase, extensive data integrity tests were conducted to validate the quality and consistency of the cleaned data. The `testthat` package in R was employed to programmatically assert the following:
+
+- Valid integer identifiers for each respondent.
+- Logical ranges for sleep durations on both weekdays and weekends (2 to 14 hours).
+- Appropriate categorization of snoring and breathing pause frequencies (0 to 3, indicating never to frequently).
+- Binary coding of reported sleep trouble (0 for no trouble, 1 for trouble).
+- Logical categorization of overly sleep frequency (0 to 4, indicating never to almost always).
+
+These tests are crucial for guaranteeing the analytical soundness of the dataset and were all passed successfully, adding a layer of assurance about the dataset's readiness for subsequent statistical modeling.
+
+## B Model Details {.unnumbered}
+
+### B.1 Posterior Predictive Check {.unnumbered}
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ppcheckandposteriorvsprior
+#| layout-ncol: 2
+#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
+
+# Set the seed for reproducibility
+set.seed(2024)
+
+# Perform posterior predictive check
+pp_check_plot <- pp_check(bayesian_logistic_model) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+# Plot posterior versus prior
+coef_names <- c("(Intercept)", "WeekdaySleepDuration", "WeekendSleepDuration",
+                "SnoringFrequency", "BreathingPauseFrequency", "OverlySleepFrequency")
+
+posterior_vs_prior_plot <- mcmc_areas(
+  as.array(bayesian_logistic_model),
+  pars = coef_names
+) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+# Plotting the two figures side by side using R Markdown layout options
+pp_check_plot
+posterior_vs_prior_plot
+```
 
 # References
