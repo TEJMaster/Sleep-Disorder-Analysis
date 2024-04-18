@@ -6,6 +6,10 @@ Throughout this project, findings from the analysis are expected to provide valu
 ### LLM Usage
 In the creation of this project, OpenAI's ChatGPT was utilized to assist in the formulation of research questions, data analysis, and interpretation of results. The complete conversation with ChatGPT can be found in `other/llm/chat_with_chatGPT.txt`, detailing the contributions of ChatGPT to this project.
 
+### Shiny Application
+
+I created a shiny application as an interactive tool allows users to input their own sleep patterns to predict the likelihood of reporting sleep troubles. Based on a logistic regression model created in this project, the application estimates the probability that an individual might report sleep issues to a healthcare provider. The shiny application is been deployed using Posit Cloud: https://posit.cloud/content/8040875
+
 ### Repository Structure
 The repository is organized to ensure ease of access and reproducibility:
 
