@@ -9,7 +9,7 @@
 required_packages <- c(
   "ggplot2", "dplyr", "tidyverse", "here", "readr", 
   "knitr", "kableExtra", "rstanarm", "haven", "testthat",
-  "arrow", "gridExtra", "modelsummary", "bayesplot"
+  "arrow", "gridExtra", "modelsummary", "bayesplot", "shiny"
 )
 
 # Function to check and install any missing packages
