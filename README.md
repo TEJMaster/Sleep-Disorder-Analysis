@@ -15,8 +15,6 @@ The repository is organized to ensure ease of access and reproducibility:
 
 - `data/`: Contains the dataset used in the project. The raw NHANES sleep data, P_SLQ.XPT, is located in `data/raw_data`. The cleaned dataset is stored in `data/analysis_data`.
 - `models/`: Stores the logistic regression model developed for this study.
-- `other/`: Holds miscellaneous components used in project creation, such as LLM usage records and additional notes.
-- `paper/`: Contains the research paper and related documents, including the introduction, data description, and analysis results.
-- `scripts/`: Includes R scripts used for data cleaning, analysis, and visualization in the project.
-
-By providing a comprehensive and structured repository, this project aims to contribute to the ongoing research on sleep health and facilitate future studies in this important area.
+- `other/`: Holds miscellaneous components used in project creation, such as LLM usage records and sketches.
+- `paper/`: Contains the research paper and related documents.
+- `scripts/`: Includes R scripts used for data download, cleaning, validation, model, shiny app code.
