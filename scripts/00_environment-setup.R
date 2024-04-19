@@ -7,7 +7,7 @@
 
 # Define a vector of required packages
 required_packages <- c(
-  "ggplot2", "dplyr", "tidyverse", "here", "readr", 
+  "ggplot2", "dplyr", "tidyverse", "here", "readr", "shinyjs",
   "knitr", "kableExtra", "rstanarm", "haven", "testthat",
   "arrow", "gridExtra", "modelsummary", "bayesplot", "shiny"
 )

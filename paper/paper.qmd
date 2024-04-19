@@ -529,7 +529,7 @@ These tests are crucial for guaranteeing the analytical soundness of the dataset
 #| warning: false
 #| label: fig-ppcheckandposteriorvsprior
 #| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-cap: "Examining how the model fits, and is affected by the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
 # Set the seed for reproducibility
@@ -559,6 +559,23 @@ posterior_vs_prior_plot
 From @fig-ppcheckandposteriorvsprior, from the left plot the alignment of the observed data (solid black line) with the simulations from the model (lighter blue lines) suggests that the model captures the essential trends and variability in the data. This alignment indicates a model that adequately reflects the observed trend and provides assurance that the predictive capacity of the model is robust for the data in question.
 
 The right plot displays the comparison between the posterior and prior distributions which offers insights into the influence of the data on our initial assumptions. The posterior distributions remain close to the priors, suggesting that the priors were well-calibrated and that the data has refined, rather than overturned, these initial beliefs. The spread of the posterior distributions signifies the inherent uncertainty and variability within the model, which is a fundamental aspect of statistical modeling and Bayesian analysis.
+
+\newpage
+
+## C Shiny App {.unnumbered}
+
+```{r fig-shiny-app, fig.cap="Demo of the shiny application", out.width='70%', out.height='70%', echo=FALSE}
+knitr::include_graphics(here("other", "sketches", "shiny-app.jpg"))
+```
+
+The Shiny app presented in @fig-shiny-app is a user-friendly tool designed to help individuals understand their risk of having sleep troubles based on their self-reported sleep habits. Utilizing a pre-trained logistic regression model from this project, this application allows users to input various factors related to their sleep, such as weekday and weekend sleep duration, frequency of snoring, incidents of breathing pauses, and levels of daytime sleepiness.
+
+To use the app, simply navigate through the input fields, providing accurate information about your regular sleep patterns. You can specify how many hours you typically sleep on weekdays and weekends, as well as how often you experience snoring, breathing pauses while sleeping, and excessive sleepiness during the day. These categories have predefined options ranging from 'Never' to 'Frequently' for snoring and breathing interruptions, and from 'Never' to 'Almost always' for feeling overly sleepy, making it straightforward to match your experiences to the app’s metrics.
+
+After inputting your data, click on the "Predict Probability" button. The app will process your inputs through the logistic regression model and return a probability score. This score represents your estimated likelihood of experiencing sleep troubles that you might report to a healthcare provider. The outcome is presented in a clear and concise manner at the bottom of the app, with the probability score highlighted in a color corresponding to the severity of the prediction: green for low, yellow for moderate, and red for high probability.
+
+You can access the Sleep Trouble Prediction Tool (Shiny app) using [https://3tbrto-terry0tu.shinyapps.io/shiny/](https://3tbrto-terry0tu.shinyapps.io/shiny/) to explore your sleep patterns and their implications for your wellbeing.
+
 
 \newpage
 
