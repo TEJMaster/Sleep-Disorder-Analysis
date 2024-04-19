@@ -4,17 +4,18 @@
 # Date: 2 April 2024
 # Contact: xiangyu.tu@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: 'dplyr', 'here', 'readr', 'testthat'
+# Pre-requisites: 'dplyr', 'here', 'haven', 'arrow', 'testthat'
 # The cleaned dataset must be located in the 'data/analysis_data' directory before running this script
 
 #### Workspace setup ####
-library(readr)
+library(haven)
+library(arrow)
 library(testthat)
 library(dplyr)
 library(here)
 
 # Load the cleaned data
-cleaned_data <- read_csv(here("data", "analysis_data", "cleaned_data.csv"))
+cleaned_data <- read_parquet(here("data", "analysis_data", "cleaned_data.parquet"))
 
 # Test 1: Check if every column has a valid integer ID (SEQN)
 test_that("Every column has a valid integer ID", {

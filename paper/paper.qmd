@@ -39,7 +39,7 @@ library(bayesplot)
 
 Sleep disturbances are increasingly recognized as a major public health issue, comparable to concerns surrounding mental health and chronic lifestyle diseases. The effects of sleep disorders extend beyond personal inconvenience, influencing public health, workplace productivity, and overall quality of life. Despite increased awareness, there is still a significant gap in understanding the behaviors and patterns linked to sleep disturbances. This study addresses this gap by analyzing self-reported data on sleep behaviors and their impact on health outcomes, and by developing tools for individuals to predict potential sleep issues.
 
-Utilizing the National Health and Nutrition Examination Survey (NHANES) dataset from 2017 to March 2020, our research examines how various sleep behaviors—such as snoring frequency, daytime sleepiness, and sleep regularity—correlate with the likelihood of reporting sleep issues to healthcare providers. The primary estimand of our analysis is the association between these behaviors and the probability of an individual reporting sleep disturbances, quantified through logistic regression. This approach provides a clearer understanding of the epidemiology of sleep problems and identifies key predictive factors.
+Utilizing the National Health and Nutrition Examination Survey (NHANES) dataset from 2017 to March 2020 [@Prevention_2021], our research examines how various sleep behaviors—such as snoring frequency, daytime sleepiness, and sleep regularity—correlate with the likelihood of reporting sleep issues to healthcare providers. The primary estimand of our analysis is the association between these behaviors and the probability of an individual reporting sleep disturbances, quantified through logistic regression. This approach provides a clearer understanding of the epidemiology of sleep problems and identifies key predictive factors.
 
 Our findings pinpoint specific behaviors that significantly correlate with sleep disturbances. These insights are vital for healthcare professionals and policy makers, identifying potential areas for intervention to improve sleep health. The impact of our research is substantial, providing a basis for strategies to reduce the effects of sleep disorders on individuals and on society as a whole.
 
@@ -60,27 +60,19 @@ cleaned_data <- read_parquet(here("data", "analysis_data", "cleaned_data.parquet
 
 ## Raw Data
 
-The dataset underpinning this analysis is derived from the National Health and Nutrition Examination Survey (NHANES), spanning from 2017 to March 2020.
+The dataset used in this analysis is derived from the National Health and Nutrition Examination Survey (NHANES), spanning from 2017 to March 2020.
 This public dataset includes responses from participants regarding their sleep patterns, incorporating 10,195 records initially.
-After meticulous data cleaning, the dataset for analysis stands at 10,031 records, encapsulating variables critical to our research: the respondent's ID, usual sleep and wake times on both weekdays and weekends, total sleep duration, frequency of snoring, incidence of breathing pauses during sleep, and self-reported communication of sleep troubles to a health professional.
+After some data cleaning, the dataset for analysis stands at 10,031 records, encapsulating variables critical to our research: the respondent's ID, usual sleep and wake times on both weekdays and weekends, total sleep duration, frequency of snoring, incidence of breathing pauses during sleep, and self-reported communication of sleep troubles to a health professional.
 The dataset provides a snapshot of Americans' sleep behaviors before the disruption caused by the COVID-19 pandemic [@Prevention_2021].
 
 The survey participants' ages range widely, reflecting the diversity of the American population.
-Variables are finely tuned to capture the multifaceted nature of sleep, encompassing aspects such as duration, disruptions, and subjective experiences of daytime sleepiness.
-The NHANES protocol ensures that this dataset is a robust and reliable source of information, adhering to stringent ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines.
+Variables are finely tuned to capture the multifaceted nature of sleep, including aspects such as duration, disruptions, and subjective experiences of daytime sleepiness.
+The NHANES protocol ensures that this dataset is a robust and reliable source of information, assure ethical standards and data collection methods, as detailed in the NHANES Analytic Guidelines.
 For further information on the data cleaning specifics and validation checks, please see the supplementary material in Appendix.
 
 ## Data Analysis Tools
 
-Our statistical exploration was conducted within the R programming environment [@r], leveraging its comprehensive ecosystem for data analysis.
-We utilized the tidyverse collection of R packages [@rTidyverse] to streamline our data processing tasks.
-The ggplot2 package [@rGgplot2] was instrumental in crafting insightful visualizations that articulated the intricate relationships within our data.
-The dplyr package [@rDplyr] provided a syntax that facilitated the manipulation and transformation of our dataset, enabling us to prepare the data effectively for logistic regression analysis.
-Data importation was efficiently handled by the readr package [@rReadr], known for its quick and user-friendly approach to reading tabular data.
-Navigational simplicity within our project's directories was achieved with the here package [@R-here], which reliably managed file paths without the need for manual path setting.
-The reproducibility of our research was enhanced by the knitr package [@rKnitr], which seamlessly wove R code into our report, ensuring that our findings are transparent and replicable.
-For tabular data presentation, kableExtra[@R-kableExtra] offered a suite of customization options that enhanced the readability and aesthetic appeal of our tables.
-The logistic regression model was developed using core functions in R, which provide robust methods for estimating the effects of various predictors on a binary outcome.
+Our analytical approach was completed using R [@r], utilizing the tidyverse [@rTidyverse] for data manipulation and ggplot2 [@rGgplot2] for visualization. The readr [@rReadr], here [@R-here], and arrow [@rArrow] packages were pivotal in handling data importation and directory management. Reproducible reporting was facilitated by knitr [@rKnitr] and kableExtra [@R-kableExtra] for enhancing table presentations. Bayesian logistic regression modeling was conducted with rstanarm [@rRstanarm], while model diagnostics were visualized using bayesplot [@rBayesplot]. These tools, which formed the backbone for this paper as well as the scripts, ensured efficient and reproducible analyses, culminating in a robust set of findings.
 
 ## Variable Description {#sec-variable}
 
@@ -120,6 +112,7 @@ Each row in the table corresponds to an individual participant, uniquely identif
 The "Overly Sleep Frequency" column indicates the frequency at which respondents report feeling overly sleepy during the day, a sign that can be indicative of inadequate sleep quality or quantity.
 Lastly, the "Reported Sleep Trouble" column is a binary measure showing whether the respondent has reported having sleep troubles to a health professional, with 0 signifying no reported trouble and 1 indicating reported trouble.
 
+\newpage
 ## Measurement:
 
 In this study, we utilized data from the National Health and Nutrition Examination Survey (NHANES), specifically focusing on the sleep disorders component which includes data collected between 2017 and March 2020.
@@ -140,6 +133,8 @@ Moreover, for variables capturing sleep duration on weekdays (SLD012) and weeken
 
 Detailed descriptions of the variables used in this study, along with the specific adjustments made to the dataset, are available in @sec-variable.
 This section is designed to provide a comprehensive understanding of the origins, processing, and analytical framework applied to each variable relevant to this study.
+
+\newpage
 
 ## Data Exploration: {#sec-exploration}
 
@@ -211,7 +206,7 @@ Further details and diagnostics of this model are provided in Appendix.
 ## Model set-up
 
 Let $y_i$ denote the binary outcome indicating whether an individual has reported sleep troubles to a doctor, with $y_i = 1$ for reported troubles and $y_i = 0$ otherwise.
-The predictors include weekday sleep duration ($x_{i1}$), weekend sleep duration ($x_{i2}$), snoring frequency ($x_{i3}$), breathing pause frequency ($x_{i4}$), and daytime sleepiness ($x_{i5}$).
+The predictors include continous variables like weekday sleep duration ($x_{i1}$), and weekend sleep duration ($x_{i2}$); ordinal categorical variables such as snoring frequency ($x_{i3}$), breathing pause frequency ($x_{i4}$), and overly sleep frequency ($x_{i5}$).
 The logistic regression model is formulated as follows:
 
 ```{=tex}
@@ -227,14 +222,14 @@ The logistic regression model is defined using a Bayesian framework, implemented
 
 In our model, the probability of an individual reporting sleep troubles, denoted by $p_i$, follows a Bernoulli distribution. The log odds of reporting sleep troubles are modeled as a linear combination of the predictors, with $\beta_0$ representing the intercept, and $\beta_1$ through $\beta_5$ representing the slopes for the respective predictors. Among these, $\beta_1$ (weekday sleep duration) and $\beta_2$ (weekend sleep duration) are continuous variables, reflecting the number of hours slept. In contrast, $\beta_3$ (snoring frequency), $\beta_4$ (breathing pause frequency), and $\beta_5$ (overly sleep frequency) are treated as ordinal categorical variables with numerically encoded categories.
 
-The priors for the intercept ($\beta_0$) and the slopes are deliberately chosen to reflect initial neutrality or skepticism about each predictor's impact on the likelihood of reporting sleep troubles. Specifically, $\beta_0$, $\beta_1$, and $\beta_2$ are assigned Normal(0, 1) priors to maintain an unbiased stance before observing the data, acknowledging that the number of sleep hours could either positively or negatively influence sleep troubles, with only a modest expectation of effect size.
+The priors for the intercept ($\beta_0$) and the slopes are deliberately chosen to reflect initial neutrality or skepticism about each predictor's impact on the likelihood of reporting sleep troubles. Specifically, $\beta_0$ for intercept, $\beta_1$, and $\beta_2$ for the continous variables about sleep hours are assigned Normal(0, 1) priors to maintain an unbiased stance before observing the data, acknowledging that the number of sleep hours could either positively or negatively influence sleep troubles, with only a modest expectation of effect size.
 
-For $\beta_3$, $\beta_4$, and $\beta_5$, which relate to snoring frequency, breathing pause frequency, and overly sleep frequency, the same Normal(0, 1) priors are used. This choice indicates no strong preconceived notions about the direction or magnitude of their impact, allowing the data itself to guide the inference about these predictors without the influence of strong initial assumptions.
+For $\beta_3$, $\beta_4$, and $\beta_5$, which relate to ordinal categorical variables such as snoring frequency, breathing pause frequency, and overly sleep frequency are set to have the same Normal(0, 1) priors. This choice indicates no strong preconceived notions about the direction or magnitude of their impact, allowing the data itself to guide the inference about these predictors without the influence of strong initial assumptions.
 
 ## Model Justification
 
 Our Bayesian logistic regression model is designed to investigate the associations between various sleep-related factors and the likelihood of reporting sleep troubles.
-The priors for the coefficients are set with specific hypotheses in mind, informed by existing literature and plausible biological mechanisms:
+The priors for the coefficients are set with specific hypotheses in mind, informed by knowleged gained from the data exploration section:
 
 **Weekday Sleep Duration (**$\beta_1$): We initially hypothesize that there may be a complex relationship between sleep duration on weekdays and sleep troubles.
 Long sleep durations could indicate an attempt to compensate for poor quality sleep, potentially related to sleep disturbances.
@@ -300,7 +295,7 @@ coefficient_table
 
 **Summary**: This analysis highlights the differential impacts of various sleep behaviors on the likelihood of reporting sleep troubles. Notably, while longer sleep on weekends appears protective, increased weekday sleep duration and higher frequencies of snoring, breathing pauses, and daytime sleepiness are linked with an elevated likelihood of reporting sleep troubles. These insights could guide clinical assessments and interventions aimed at improving sleep health.
 
-## Model Equation
+## Logistic Regression Model for Predicting Individual Sleep Disorder Probability
 
 ```{=tex}
 \begin{align}
@@ -311,7 +306,7 @@ coefficient_table
 
 The above equation represents the logistic regression model used to estimate the probability ($\hat{p_i}$) of an individual reporting sleep troubles. In this model, $\text{logit}(\hat{p_i})$ is the log-odds of the individual reporting sleep troubles, which is calculated as a linear combination of several predictors. Here, $\beta_0=−1.396$ is the intercept, which represents the log-odds of reporting sleep troubles when all predictors are at zero. The coefficients $\beta_1=0.051$, $\beta_2=−0.131$, $\beta_3=0.032$, $\beta_4=0.412$, and $\beta_5=0.425$ represent the change in log-odds of reporting sleep troubles for each one-unit change in weekday sleep duration ($x_{i1}$), weekend sleep duration ($x_{i2}$), snoring frequency ($x_{i3}$), breathing pause frequency ($x_{i4}$), and daytime sleepiness ($x_{i5}$), respectively (Please check @sec-variable for details). This model assumes that the probability of reporting sleep troubles increases or decreases with changes in these sleep-related behaviors and symptoms.
 
-## Predict Sleep Disorder Through Self Reported Patterns
+## Example of Predict Sleep Disorder Through Self Reported Patterns
 
 This section provides a detailed comparison of predicted sleep trouble probabilities for two hypothetical individuals, Jack and Bob, based on their sleep behavior statistics.
 The table below illustrates the significant differences in their sleep patterns and how these patterns potentially influence the logistic regression model's predictions regarding their sleep troubles.
@@ -575,7 +570,6 @@ To use the app, simply navigate through the input fields, providing accurate inf
 After inputting your data, click on the "Predict Probability" button. The app will process your inputs through the logistic regression model and return a probability score. This score represents your estimated likelihood of experiencing sleep troubles that you might report to a healthcare provider. The outcome is presented in a clear and concise manner at the bottom of the app, with the probability score highlighted in a color corresponding to the severity of the prediction: green for low, yellow for moderate, and red for high probability.
 
 You can access the Sleep Trouble Prediction Tool (Shiny app) using [https://3tbrto-terry0tu.shinyapps.io/shiny/](https://3tbrto-terry0tu.shinyapps.io/shiny/) to explore your sleep patterns and their implications for your wellbeing.
-
 
 \newpage
 
