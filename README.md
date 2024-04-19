@@ -8,7 +8,7 @@ In the creation of this project, OpenAI's ChatGPT was utilized to assist in the 
 
 ### Shiny Application
 
-I created a shiny application as an interactive tool allows users to input their own sleep patterns to predict the likelihood of reporting sleep troubles. Based on a logistic regression model created in this project, the application estimates the probability that an individual might report sleep issues to a healthcare provider. The shiny application is been deployed using shinyapps.io: [https://posit.cloud/content/8041329](https://3tbrto-terry0tu.shinyapps.io/shiny/) (you can also start the shiny application locally using `scripts/05_shiny-app.R`)
+I created a shiny application as an interactive tool allows users to input their own sleep patterns to predict the likelihood of reporting sleep troubles. Based on a logistic regression model created in this project, the application estimates the probability that an individual might report sleep issues to a healthcare provider. The shiny application is been deployed using shinyapps.io: [https://3tbrto-terry0tu.shinyapps.io/shiny/](https://3tbrto-terry0tu.shinyapps.io/shiny/) (you can also start the shiny application locally using `scripts/05_shiny-app.R`)
 
 ### Repository Structure
 The repository is organized to ensure ease of access and reproducibility:
